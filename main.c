@@ -1,15 +1,14 @@
 //
-// lcd.c - LCD display examplefor dsPIC18F4620
-// Written by Ted Burke - Last updated 8-10-2013
+// Resistivity meter Code -- Testing 
 //
-
+#include <pic18f2550.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <xc.h>
 
 
 
-
+//Define PIN for LCD
 #define PIN_RS LATBbits.LATB4
 #define PIN_E LATBbits.LATB5
  
@@ -24,19 +23,49 @@ void init_LCD();
 // Select clock oscillator (default frequency Fosc=1MHz -> Tcy = 4us).
 // Disable reset pin, watchdog timer, low voltage programming and
 // brown-out reset.
-#pragma config FOSC=INTOSC_EC,MCLRE=OFF,WDT=OFF,LVP=OFF
+#define _XTAL_FREQ   20000000UL // This one is just for __delay_ms
 
+#pragma config PLLDIV = 5       // PLL Prescaler Selection bits (Divide by 5 (20 MHz oscillator input))
+#pragma config CPUDIV = OSC2_PLL3 // System Clock Postscaler Selection bits ([Primary Oscillator Src: /2][96 MHz PLL Src: /3])
+#pragma config USBDIV = 2
+#pragma config FOSC = HSPLL_HS  // Oscillator Selection bits (HS oscillator, PLL enabled (HSPLL))
 
- 
-// Select which pins the program will use for the LCD screen
-// control signals, RS, RW and E.
-// NB I had to change these from the names used in my previous
-// dsPIC30F4011 example to avoid a clash with the equivalent
-// definitions in the XC8 compiler's peripheral library.
- 
+// Everything is Off After this to make sure things do not go wrong
 
+#pragma config FCMEN = OFF      // Fail-Safe Clock Monitor Enable bit (Fail-Safe Clock Monitor disabled)
+#pragma config IESO = OFF       // Internal/External Oscillator Switchover bit (Oscillator Switchover mode disabled)
+#pragma config PWRT = OFF       // Power-up Timer Enable bit (PWRT disabled)
+#pragma config BOR = OFF        // Brown-out Reset Enable bits (Brown-out Reset disabled in hardware and software)
+#pragma config BORV = 3         // Brown-out Reset Voltage bits (Minimum setting)
+#pragma config VREGEN = OFF     // USB Voltage Regulator Enable bit (USB voltage regulator disabled)
+#pragma config WDT = OFF        // Watchdog Timer Enable bit (WDT disabled (control is placed on the SWDTEN bit))
+#pragma config WDTPS = 32768    // Watchdog Timer Postscale Select bits (1:32768)
+#pragma config CCP2MX = OFF     // CCP2 MUX bit (CCP2 input/output is multiplexed with RB3)
+#pragma config PBADEN = OFF     // PORTB A/D Enable bit (PORTB<4:0> pins are configured as digital I/O on Reset)
+#pragma config LPT1OSC = OFF    // Low-Power Timer 1 Oscillator Enable bit (Timer1 configured for higher power operation)
+#pragma config MCLRE = OFF      // MCLR Pin Enable bit (RE3 input pin enabled; MCLR pin disabled)
+#pragma config STVREN = OFF     // Stack Full/Underflow Reset Enable bit (Stack full/underflow will not cause Reset)
+#pragma config LVP = OFF        // Single-Supply ICSP Enable bit (Single-Supply ICSP disabled)
 
-
+#pragma config XINST = OFF      // Extended Instruction Set Enable bit (Instruction set extension and Indexed Addressing mode disabled
+#pragma config CP0 = OFF        // Code Protection bit (Block 0 (000800-001FFFh) is not code-protected)
+#pragma config CP1 = OFF        // Code Protection bit (Block 1 (002000-003FFFh) is not code-protected)
+#pragma config CP2 = OFF        // Code Protection bit (Block 2 (004000-005FFFh) is not code-protected)
+#pragma config CP3 = OFF        // Code Protection bit (Block 3 (006000-007FFFh) is not code-protected)
+#pragma config CPB = OFF        // Boot Block Code Protection bit (Boot block (000000-0007FFh) is not code-protected)
+#pragma config CPD = OFF        // Data EEPROM Code Protection bit (Data EEPROM is not code-protected)
+#pragma config WRT0 = OFF       // Write Protection bit (Block 0 (000800-001FFFh) is not write-protected)
+#pragma config WRT1 = OFF       // Write Protection bit (Block 1 (002000-003FFFh) is not write-protected)
+#pragma config WRT2 = OFF       // Write Protection bit (Block 2 (004000-005FFFh) is not write-protected)
+      // Write Protection bit (Block 3 (006000-007FFFh) is not write-protected)
+#pragma config WRTC = OFF       // Configuration Register Write Protection bit
+#pragma config WRTB = OFF       // Boot Block Write Protection bit (Boot block (000000-0007FFh) is not write-protected)
+      // Data EEPROM Write Protection bit (Data EEPROM is not write-protected)
+#pragma config EBTR0 = OFF      // Table Read Protection bit
+#pragma config EBTR1 = OFF      // Table Read Protection bit
+#pragma config EBTR2 = OFF      // Table Read Protection bit
+#pragma config EBTR3 = OFF      // Table Read Protection bit
+#pragma config EBTRB = OFF      // Boot Block Table Read Protection bit
 
 //Function to Initialise the ADC Module
 void ADCInit()
@@ -115,6 +144,7 @@ void main()
     send_command_byte(0xC0); // Go to start of line 2
     for (n=0 ; n<16 ; ++n) send_data_byte(values[n]);
     
+    delay_ms(50);
 
  
    }
@@ -165,7 +195,7 @@ void delay_ms(unsigned int n)
     // At Fosc=1Mhz, Tcy is 4us. That's the time
     // taken to perform one machine code instruction.
     // Therefore a delay of 250 x Tcy = 1ms.
-    while(n--) _delay(250);
+    while(n--) _delay(5000);
 }
   
 void send_nibble(unsigned char nibble)
