@@ -1,4 +1,4 @@
-# Reistivity-Meter
+# Resistivity-Meter
 Prototyping resistivity logger
 
 Based on Micro controler PIC18F2550
